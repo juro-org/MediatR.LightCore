@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0</Version>
+    <Authors>Jürgen Rosenthal-Buroh</Authors>
+    <Description>Implementation of the registration module of LightCore for registration of MediatR.</Description>
+    <PackageProjectUrl>https://github.com/JuergenRB/MediatR.LightCore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/JuergenRB/MediatR.LightCore</RepositoryUrl>
+    <PackageTags>MediatR; LightCore</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright © $(FullYear) - Jürgen Rosenthal-Buroh</Copyright>
+    <PackageReleaseNotes>https://github.com/JuergenRB/MediatR.LightCore</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\..\res\Logo_256.png" Link="Logo.png" Pack="true" PackagePath="Logo.png" />
+	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LightCore" Version="1.5.1" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>
