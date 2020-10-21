@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace MediatR.LightCore
 {
@@ -22,14 +21,17 @@ namespace MediatR.LightCore
         {
             return possibleType.IsClass && !possibleType.IsAbstract && possibleType.GetInterfaces().Any(t => t.FullName == null && t.Namespace.Equals(expected.Namespace) && t.Name.Equals(expected.Name));
         }
-        private static void InnerRegister(IContainerBuilder containerBuilder, IEnumerable<Type> types, Type typeToRegister, IEnumerable<Type[]> genericArguments)
+
+        private static int InnerRegister(IContainerBuilder containerBuilder, IEnumerable<Type> types, Type typeToRegister, IEnumerable<Type[]> genericArguments)
         {
+            var count = 0;
             types.Where(t => IsTypeWithGenericType(t, typeToRegister))
                 .ToList()
                  .ForEach(type =>
                  {
                      var regType = GetInterfaceImpl(type, typeToRegister);
                      containerBuilder.Register(regType, type);
+                     count++;
                  });
             types.Where(t => IsTypeWithoutGenericType(t, typeToRegister))
                .ToList()
@@ -47,8 +49,10 @@ namespace MediatR.LightCore
                         if (!isAssignable) { return; }
                         var regClass = type.MakeGenericType(genericArgument);
                         containerBuilder.Register(regType, regClass);
+                        count++;
                     });
                 });
+            return count;
         }
     }
 }
