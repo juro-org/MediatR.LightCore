@@ -3,6 +3,7 @@ using MediatR.Examples;
 using NUnit.Framework;
 using Shouldly;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MediatR.LightCore.Tests
@@ -19,7 +20,7 @@ namespace MediatR.LightCore.Tests
             this.writer = new StringWriter();
             var builder = new ContainerBuilder();
             builder.RegisterModule(new MediatRModule(typeof(NotificationTests).Assembly));
-
+            //builder.Register<INotificationHandler<Pinged>, GenericHandler>();
             builder.Register<System.IO.TextWriter>(ctn => writer);
             this.container = builder.Build();
         }
@@ -51,6 +52,23 @@ namespace MediatR.LightCore.Tests
         [Test]
         public async Task ConstrainedNotificationHandler()
         {
+            var handler = typeof(INotificationHandler<>);
+            var concretHandler = typeof(GenericHandler);
+
+            var intf = concretHandler.GetInterface(handler.Name);
+            var a = concretHandler.GenericTypeArguments.SequenceEqual(handler.GenericTypeArguments);
+            var expectedMessageFromHandler = "Got notified";
+
+            var mediator = container.Resolve<IMediator>();
+            await mediator.Publish(new Pinged());
+            string actualMessageForNotification = writer.Contents;
+
+            actualMessageForNotification.ShouldContain(expectedMessageFromHandler);
+        }
+
+        [Test]
+        public async Task CovariantNotificationHandler()
+        {
             var expectedMessageFromHandler = "Got pinged constrained async.";
 
             var mediator = container.Resolve<IMediator>();
@@ -63,7 +81,8 @@ namespace MediatR.LightCore.Tests
         [Test]
         public async Task MultipleNotificationHandlers()
         {
-            var expectedMessageFromHandlers = $"Got pinged async.{Environment.NewLine}" +
+            var expectedMessageFromHandlers = $"Got notified.{Environment.NewLine}" +
+                $"Got pinged async.{Environment.NewLine}" +
                 $"Got pinged also async.{Environment.NewLine}" +
                 $"Got pinged constrained async.{Environment.NewLine}";
 

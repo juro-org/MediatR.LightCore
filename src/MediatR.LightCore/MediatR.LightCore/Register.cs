@@ -7,19 +7,39 @@ namespace MediatR.LightCore
 {
     internal static partial class Register
     {
+        private static bool IsConcrete(this Type type)
+        {
+            return !type.IsAbstract && type.IsClass;
+        }
+
+        private static bool IsMatchingInterface(Type possibleType, Type expectedInterface)
+        {
+            if (possibleType == null || expectedInterface == null)
+            {
+                return false;
+            }
+
+            if (possibleType.IsInterface)
+            {
+                return possibleType.GetGenericTypeDefinition().Equals(expectedInterface);
+            }
+
+            return IsMatchingInterface(possibleType.GetInterface(expectedInterface.Name), expectedInterface);
+        }
+
         private static bool IsTypeWithGenericType(Type possibleType, Type expected)
         {
-            return possibleType.IsClass && !possibleType.IsAbstract && possibleType.GetInterfaces().Any(t => t.FullName != null && t.FullName.StartsWith(expected.FullName));
+            return IsConcrete(possibleType) && IsMatchingInterface(possibleType, expected) && !possibleType.IsGenericType;
         }
 
         private static Type GetInterfaceImpl(Type possibleType, Type expected)
         {
-            return possibleType.GetInterfaces().First(t => t.FullName != null && t.FullName.StartsWith(expected.FullName));
+            return possibleType.GetInterface(expected.Name);
         }
 
         private static bool IsTypeWithoutGenericType(Type possibleType, Type expected)
         {
-            return possibleType.IsClass && !possibleType.IsAbstract && possibleType.GetInterfaces().Any(t => t.FullName == null && t.Namespace.Equals(expected.Namespace) && t.Name.Equals(expected.Name));
+            return IsConcrete(possibleType) && IsMatchingInterface(possibleType, expected) && possibleType.IsGenericType;
         }
 
         private static int InnerRegister(IContainerBuilder containerBuilder, IEnumerable<Type> types, Type typeToRegister, IEnumerable<Type[]> genericArguments)
@@ -30,28 +50,46 @@ namespace MediatR.LightCore
                  .ForEach(type =>
                  {
                      var regType = GetInterfaceImpl(type, typeToRegister);
-                     containerBuilder.Register(regType, type);
+                     var typeGenericArguments = regType.GetGenericArguments();
+                     if (typeGenericArguments.Any(x => IsConcrete(x)))
+                     {
+                         containerBuilder.Register(regType, type);
+                         count++;
+                         return;
+                     }
+
+                     count = RegisterForAllGenericArguments(containerBuilder, typeToRegister, genericArguments, type, count);
                      count++;
                  });
             types.Where(t => IsTypeWithoutGenericType(t, typeToRegister))
                .ToList()
                 .ForEach(type =>
                 {
-                    genericArguments.ToList().ForEach(genericArgument =>
-                    {
-                        var regType = typeToRegister.MakeGenericType(genericArgument);
-                        var typeGenericArguments = type.GetGenericArguments();
-                        bool isAssignable = true;
-                        for (int i = 0; i < typeGenericArguments.Length; i++)
-                        {
-                            isAssignable &= typeGenericArguments[i].BaseType.IsAssignableFrom(genericArgument[i]);
-                        }
-                        if (!isAssignable) { return; }
-                        var regClass = type.MakeGenericType(genericArgument);
-                        containerBuilder.Register(regType, regClass);
-                        count++;
-                    });
+                    count = RegisterForAllGenericArguments(containerBuilder, typeToRegister, genericArguments, type, count);
                 });
+            return count;
+        }
+
+        private static int RegisterForAllGenericArguments(IContainerBuilder containerBuilder, Type typeToRegister, IEnumerable<Type[]> genericArguments, Type type, int count)
+        {
+            genericArguments.ToList().ForEach(genericArgument =>
+            {
+                var regType = typeToRegister.MakeGenericType(genericArgument);
+                var typeGenericArguments = type.GetGenericArguments();
+                bool isAssignable = true;
+                for (int i = 0; i < typeGenericArguments.Length; i++)
+                {
+                    isAssignable &= typeGenericArguments[i].BaseType.IsAssignableFrom(genericArgument[i]);
+                }
+                if (!isAssignable) { return; }
+                var regClass = type;
+                if (type.IsGenericType)
+                {
+                    regClass = type.MakeGenericType(genericArgument);
+                }
+                containerBuilder.Register(regType, regClass);
+                count++;
+            });
             return count;
         }
     }
