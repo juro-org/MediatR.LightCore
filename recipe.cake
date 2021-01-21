@@ -10,7 +10,9 @@ BuildParameters.SetParameters(
   masterBranchName: "main",
   repositoryOwner: "JuergenRB",
   shouldRunDotNetCorePack: true,
-  shouldUseDeterministicBuilds: true);
+  shouldUseDeterministicBuilds: true,
+  preferredBuildAgentOperatingSystem: PlatformFamily.Linux,
+  preferredBuildProviderType: BuildProviderType.GitHubActions);
 
 BuildParameters.PrintParameters(Context);
 
