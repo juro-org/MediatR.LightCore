@@ -1,11 +1,19 @@
 using MediatR.Pipeline;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediatR.Examples.ExceptionHandler
 {
+    public class GenericExceptionAction<TRequest> : RequestExceptionAction<TRequest>
+    {
+        protected override void Execute(TRequest request, Exception exception)
+        {
+        }
+    }
+
     public class CommonExceptionHandler : AsyncRequestExceptionHandler<PingResource, Pong>
     {
         private readonly TextWriter _writer;

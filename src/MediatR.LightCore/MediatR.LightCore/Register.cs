@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MediatR.Pipeline;
 
 namespace MediatR.LightCore
 {
@@ -80,12 +81,13 @@ namespace MediatR.LightCore
                 for (int i = 0; i < typeGenericArguments.Length; i++)
                 {
                     isAssignable &= typeGenericArguments[i].BaseType.IsAssignableFrom(genericArgument[i]);
+                    typeGenericArguments[i] = genericArgument[i];
                 }
                 if (!isAssignable) { return; }
                 var regClass = type;
                 if (type.IsGenericType)
                 {
-                    regClass = type.MakeGenericType(genericArgument);
+                    regClass = type.MakeGenericType(typeGenericArguments);
                 }
                 containerBuilder.Register(regType, regClass);
                 count++;
