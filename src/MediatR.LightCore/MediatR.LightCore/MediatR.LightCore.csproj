@@ -6,25 +6,27 @@
     <Version>0.1.1</Version>
     <Authors>Jürgen Rosenthal-Buroh</Authors>
     <Description>Implementation of the registration module of LightCore for registration of MediatR.</Description>
-    <PackageProjectUrl>https://github.com/JuergenRB/MediatR.LightCore</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/JuergenRB/MediatR.LightCore</RepositoryUrl>
-    <PackageTags>MediatR; LightCore</PackageTags>
+    <PackageProjectUrl>https://github.com/juro-org/MediatR.LightCore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/juro-org/MediatR.LightCore</RepositoryUrl>
+    <PackageTags>MediatR; LightCore; DI; dependency-injection;</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <StartYear>2020</StartYear>
+    <EndYear>$([System.DateTime]::Today.Year)</EndYear>
+    <FullYear Condition="'$(StartYear)'=='$(EndYear)'">$(StartYear)</FullYear>
+    <FullYear Condition="'$(StartYear)'!='$(EndYear)'">$(StartYear)-$(EndYear)</FullYear>
     <Copyright>Copyright © $(FullYear) - Jürgen Rosenthal-Buroh</Copyright>
     <PackageReleaseNotes>https://github.com/JuergenRB/MediatR.LightCore</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <AssemblyVersion>0.1.1.0</AssemblyVersion>
     <FileVersion>0.1.1.0</FileVersion>
-    <PackageIcon>logo_256.png</PackageIcon>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\..\..\res\Logo_256.png" Link="Logo.png" Pack="true" PackagePath="Logo.png" />
-		<None Include="..\..\..\res\logo_256.png">
-		  <Pack>True</Pack>
-		  <PackagePath></PackagePath>
-		</None>
+    <None Include="$(ProjectDir)../../../README.md" Link="README.md" PackagePath="" Pack="true" />
+		<None Include="$(ProjectDir)../../../res/Logo_256.png" Link="Logo.png" PackagePath="" Pack="true" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="LightCore" Version="1.5.1" />
