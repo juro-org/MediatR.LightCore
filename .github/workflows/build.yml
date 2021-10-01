@@ -15,6 +15,11 @@ jobs:
       matrix:
         os: [ windows-2019, ubuntu-18.04, macos-10.15 ]
 
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      NUGET_SOURCE: ${{ secrets.NUGET_SOURCE }}
+
     steps:
       - name: Checkout the repository 
         uses: actions/checkout@v2
