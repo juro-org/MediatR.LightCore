@@ -8,7 +8,7 @@ BuildParameters.SetParameters(
   sourceDirectoryPath: "./src/MediatR.LightCore",
   title: "MediatR.LightCore",
   masterBranchName: "main",
-  repositoryOwner: "JuergenRB",
+  repositoryOwner: "juro-org",
   shouldRunDotNetCorePack: true,
   shouldUseDeterministicBuilds: true,
   preferredBuildAgentOperatingSystem: PlatformFamily.Linux,
