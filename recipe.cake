@@ -11,6 +11,7 @@ BuildParameters.SetParameters(
   repositoryOwner: "juro-org",
   shouldRunDotNetCorePack: true,
   shouldUseDeterministicBuilds: true,
+  shouldRunCodecov: false,
   preferredBuildAgentOperatingSystem: PlatformFamily.Linux,
   preferredBuildProviderType: BuildProviderType.GitHubActions);
 
